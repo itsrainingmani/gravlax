@@ -1,6 +1,6 @@
 # Novalox 🥯🍣
 
-A TypeScript implementation of the Lox Language from [Crafting Interpreters](https://craftinginterpreters)
+A TypeScript implementation of the Lox Language from [Crafting Interpreters](https://craftinginterpreters.com)
 
 ## Usage
 
