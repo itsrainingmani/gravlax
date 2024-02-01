@@ -1,4 +1,8 @@
-# gravlax
+# Novalox 🥯🍣
+
+A TypeScript implementation of the Lox Language from [Crafting Interpreters](https://craftinginterpreters)
+
+## Usage
 
 To install dependencies:
 
