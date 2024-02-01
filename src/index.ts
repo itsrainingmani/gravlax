@@ -114,6 +114,23 @@ function scanTokens(s: Scanner) {
 		return s.source.charAt(current);
 	}
 
+	function peekNext() {
+		if (current + 1 >= s.source.length) return '\0';
+		return s.source.charAt(current + 1);
+	}
+
+	function isDigit(c: string) {
+		return c >= '0' && c <= '9';
+	}
+
+	function isAlpha(c: string) {
+		return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
+	}
+
+	function isAlphaNumeric(c: string) {
+		return isAlpha(c) || isDigit(c);
+	}
+
 	function string() {
 		while (peek() != '"' && !isAtEnd()) {
 			if (peek() == '\n') line += 1;
@@ -131,6 +148,29 @@ function scanTokens(s: Scanner) {
 		// Trim surrounding quotes
 		let value = s.source.substring(start + 1, current - 1);
 		addToken(TokenType.STRING, value);
+	}
+
+	function number() {
+		while (isDigit(peek())) advance();
+
+		// Look for a fractional part
+		if (peek() == '.' && isDigit(peekNext())) {
+			// Consume the '.'
+			advance();
+
+			while (isDigit(peek())) advance();
+		}
+
+		addToken(
+			TokenType.NUMBER,
+			Number.parseFloat(s.source.substring(start, current))
+		);
+	}
+
+	function identifier() {
+		while (isAlphaNumeric(peek())) advance();
+
+		addToken(TokenType.IDENTIFIER);
 	}
 
 	function scan() {
@@ -208,7 +248,13 @@ function scanTokens(s: Scanner) {
 				string();
 				break;
 			default:
-				error(line, 'Unexpected character.');
+				if (isDigit(c)) {
+					number();
+				} else if (isAlpha(c)) {
+					identifier();
+				} else {
+					error(line, 'Unexpected character.');
+				}
 				break;
 		}
 	}
