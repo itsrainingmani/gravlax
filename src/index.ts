@@ -1,4 +1,5 @@
 import { stdout, argv, exit } from "node:process";
+import { parseArgs } from "util";
 
 let had_error = false;
 
@@ -292,11 +293,24 @@ function scanTokens(s: Scanner) {
 }
 
 async function main() {
-  if (argv.length > 2) {
-    stdout.write("Usage: gravlax [script]");
+  const { values, positionals } = parseArgs({
+    args: Bun.argv,
+    options: {
+      file: {
+        type: "string",
+      },
+    },
+    strict: true,
+    allowPositionals: true,
+  });
+
+  if (positionals.length > 2) {
+    stdout.write("Usage: novalox --file [script]");
     exit(64);
-  } else if (argv.length === 1) {
-    run_file(argv[1]);
+  }
+
+  if (values.file !== undefined) {
+    run_file(values.file);
   } else {
     await run_prompt();
   }
@@ -328,6 +342,7 @@ async function run_prompt() {
 function run(source: string) {
   let scanner: Scanner = { source, tokens: new Array() };
   scanTokens(scanner);
+  console.log(scanner.tokens);
 }
 
 main();
